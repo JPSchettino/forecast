@@ -684,7 +684,7 @@ fitted.forecast_ARIMA <- fitted.Arima
 #' accuracy(forecast(air.model,h=48,lambda=NULL),
 #'          log(window(AirPassengers,start=1957)))
 #'
-Arima <- function(y, order=c(0, 0, 0), seasonal=c(0, 0, 0), xreg=NULL, include.mean=TRUE,
+Arimapoisson <- function(y, order=c(0, 0, 0), seasonal=c(0, 0, 0), xreg=NULL, include.mean=TRUE,
                   include.drift=FALSE, include.constant, lambda=model$lambda, biasadj=FALSE,
                   method=c("CSS-ML", "ML", "CSS"), model=NULL, x=y, ...) {
   # Remove outliers near ends
@@ -743,7 +743,7 @@ Arima <- function(y, order=c(0, 0, 0), seasonal=c(0, 0, 0), xreg=NULL, include.m
   }
 
   if (!is.null(model)) {
-    tmp <- arima2(x, model, xreg = xreg, method = method)
+    tmp <- arimapoisson2(x, model, xreg = xreg, method = method)
     xreg <- tmp$xreg
     tmp$fitted <- NULL
     tmp$lambda <- model$lambda
@@ -754,9 +754,9 @@ Arima <- function(y, order=c(0, 0, 0), seasonal=c(0, 0, 0), xreg=NULL, include.m
                            make.unique(c("drift", if(is.null(colnames(xreg)) && !is.null(xreg)) rep("", NCOL(xreg)) else colnames(xreg))))
     }
     if (is.null(xreg)) {
-      suppressWarnings(tmp <- stats::arima(x = x, order = order, seasonal = seasonal, include.mean = include.mean, method = method, ...))
+      suppressWarnings(tmp <- MinhaArima(x = x, order = order, seasonal = seasonal, include.mean = include.mean, method = method, ...))
     } else {
-      suppressWarnings(tmp <- stats::arima(x = x, order = order, seasonal = seasonal, xreg = xreg, include.mean = include.mean, method = method, ...))
+      suppressWarnings(tmp <- MinhaArima(x = x, order = order, seasonal = seasonal, xreg = xreg, include.mean = include.mean, method = method, ...))
     }
   }
 
@@ -786,7 +786,7 @@ Arima <- function(y, order=c(0, 0, 0), seasonal=c(0, 0, 0), xreg=NULL, include.m
 }
 
 # Refits the model to new data x
-arima2 <- function(x, model, xreg, method) {
+arimapoisson2 <- function(x, model, xreg, method) {
   use.drift <- is.element("drift", names(model$coef))
   use.intercept <- is.element("intercept", names(model$coef))
   use.xreg <- is.element("xreg", names(model$call))
