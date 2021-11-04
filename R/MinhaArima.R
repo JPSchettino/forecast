@@ -6,7 +6,7 @@
                                                                                                         "Rossignol2011"), optim.method = "BFGS",
           optim.control = list(), kappa = 1e+06)
 {
-  "%+%" <- function(a, b) .Call(stats:::C_TSconv, a, b)
+  "%+%" <- function(a, b) .Call(stats:::C_TSconv, a, b) #
   SSinit <- match.arg(SSinit)
   SS.G <- SSinit == "Gardner1980"
   upARIMA <- function(mod, phi, theta) {
@@ -188,10 +188,10 @@
       dxreg <- diff(dxreg, seasonal$period, seasonal$order[2L])
     }
     fit <- if (length(dx) > ncol(dxreg))
-      stats::glm(dx ~ dxreg - 1,family = poisson(link = "log"),  na.action = na.omit)
+      stats::glm(dx ~ dxreg ,family = poisson(link = "log"),  na.action = na.omit)
     else list(rank = 0L)
     if (fit$rank == 0L) {
-      fit <- stats::glm(x ~ xreg - 1,family = poisson(link = "log"), na.action = na.omit)
+      fit <- stats::glm(x ~ xreg,family = poisson(link = "log"), na.action = na.omit)
     }
     isna <- is.na(x) | apply(xreg, 1L, anyNA)
     n.used <- sum(!isna) - length(Delta)
